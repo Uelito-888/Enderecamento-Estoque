@@ -207,7 +207,7 @@ function mostrarItem(item){
     let cIndex = Number(item.cabide);
 
     // mostra apenas faixa da dezena
-    let cabMin = Math.max(1, cIndex - (cIndex%10) +1); 
+    let cabMin = Math.max(1, cIndex - ((cIndex - 1) % 10));
     let cabMax = Math.min(totalCabGlobal, cabMin + 9);
 
     desenharMapaFaixa(pIndex, cabMin, cabMax);
