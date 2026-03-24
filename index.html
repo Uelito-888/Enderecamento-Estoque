@@ -100,7 +100,7 @@ input {
     <button onclick="setAba('rolamentos especiais', this)">Rolamentos Especiais</button>
 </div>
 
-<div id="setor">Nenhum setor selecionado</div>
+<div id="setor"></br>Nenhum setor selecionado</div>
 
 <br>
 
@@ -130,7 +130,7 @@ function setAba(nome, btn){
     document.querySelectorAll(".painel button").forEach(b => b.classList.remove("ativo"));
     btn.classList.add("ativo");
 
-    setor.innerHTML = "Setor atual: " + nome;
+    setor.innerHTML = "<br>Setor atual: " + nome;
 
     // Limpa info, sugestões
     info.innerHTML = "";
