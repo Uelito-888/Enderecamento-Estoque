@@ -7,7 +7,23 @@
 body {
     font-family: Arial;
     text-align: center;
-    background: #f5f5f5;
+
+    background: url('imagem-engrenagem.jpg') no-repeat center center fixed;
+    background-size: cover;
+}
+
+/* camada branca suave por cima da imagem */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    background: rgba(245,245,245,0.9);
+    backdrop-filter: blur(3px);
+    z-index: -1;
 }
 
 .painel button {
@@ -22,7 +38,7 @@ body {
 }
 
 .ativo {
-    background: #1ec31e; /* verde */
+    background: #1ec31e;
     color: white;
     transform: scale(1.05);
 }
@@ -82,8 +98,6 @@ input {
     color: white;
     font-weight: bold;
 }
-
-/* removida borda laranja */
 </style>
 </head>
 
@@ -105,16 +119,16 @@ input {
     <button onclick="setAba('prateleira flowpack', this)">Prateleira Flowpack</button>
 </div>
 
-<div id="setor"></br>Nenhum setor selecionado</div>
+<div id="setor"><br>Nenhum setor selecionado</div>
 
 <br>
 
 <input id="busca" placeholder="Digite código ou descrição">
 
 <div id="sugestoes"></div>
-</br>
+<br>
 <div id="info"></div>
-</br>
+<br>
 <div id="mapa" class="grid"></div>
 
 <script>
@@ -131,17 +145,14 @@ busca.addEventListener("keyup", sugerir);
 function setAba(nome, btn){
     abaAtual = nome;
 
-    // marca aba ativa em verde
     document.querySelectorAll(".painel button").forEach(b => b.classList.remove("ativo"));
     btn.classList.add("ativo");
 
     setor.innerHTML = "<br>Setor atual: " + nome;
 
-    // Limpa info, sugestões
     info.innerHTML = "";
     sugestoes.innerHTML = "";
 
-    // desenha mapa completo da aba
     carregarMapaCompleto();
 }
 
@@ -198,7 +209,6 @@ async function sugerir(){
 }
 
 function mostrarItem(item){
-    // remove cores antigas
     document.querySelectorAll(".cel").forEach(c => c.classList.remove("ok","baixo"));
 
     let letra = isNaN(item.prateleira) ? item.prateleira : letras[item.prateleira-1];
@@ -213,7 +223,6 @@ function mostrarItem(item){
     let pIndex = isNaN(item.prateleira) ? letras.indexOf(letra)+1 : Number(item.prateleira);
     let cIndex = Number(item.cabide);
 
-    // mostra apenas faixa da dezena
     let cabMin = Math.max(1, cIndex - ((cIndex - 1) % 10));
     let cabMax = Math.min(totalCabGlobal, cabMin + 9);
 
@@ -222,14 +231,10 @@ function mostrarItem(item){
     let cel = document.getElementById("p"+pIndex+"c"+cIndex);
     if(!cel) return;
 
-    // aplica cor verde ou vermelho dependendo do estoque
     if(item.estoqueAtual <= item.estoqueMin) cel.classList.add("baixo");
     else cel.classList.add("ok");
-
-    // sem highlight/borda
 }
 
-// desenha mapa completo
 function desenharMapaCompleto(pMax, cMax){
     mapa.innerHTML="";
     mapa.style.gridTemplateColumns = `repeat(${cMax},60px)`;
@@ -245,7 +250,6 @@ function desenharMapaCompleto(pMax, cMax){
     }
 }
 
-// desenha faixa de cabides (janela da dezena)
 function desenharMapaFaixa(prat, cabMin, cabMax){
     mapa.innerHTML="";
     let cabTotal = cabMax - cabMin + 1;
