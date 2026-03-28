@@ -21,15 +21,17 @@ body::before {
     width: 100%;
     height: 100%;
 
-    background: rgba(245,245,245,0.6);
+    background: rgba(245,245,245,0.7);
     backdrop-filter: blur(3px);
     z-index: -1;
 }
 
+/* BOTÕES COM BORDA PRETA */
 .painel button {
     padding: 12px 20px;
     margin: 6px;
-    border: none;
+    border: 2px solid black;
+    border-radius: 6px;
     cursor: pointer;
     font-size: 16px;
     background: #ccc;
@@ -37,10 +39,18 @@ body::before {
     transition: all 0.2s;
 }
 
+/* efeito hover */
+.painel button:hover {
+    background: #bbb;
+    transform: scale(1.03);
+}
+
+/* botão ativo */
 .ativo {
     background: #1ec31e;
     color: white;
     transform: scale(1.05);
+    border: 2px solid black;
 }
 
 #setor {
