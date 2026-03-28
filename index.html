@@ -4,18 +4,17 @@
 <meta charset="UTF-8">
 
 <style>
-/* configuração geral */
 html, body {
     margin: 0;
     padding: 0;
     height: 100%;
 }
 
-/* fundo principal */
 body {
     font-family: Arial;
     text-align: center;
 
+    /* FUNDO CORRIGIDO */
     background:
         radial-gradient(circle at center, rgba(0,0,0,0) 50%, rgba(0,0,0,0.6) 100%),
         url('imagem-engrenagem.jpg') no-repeat center center;
@@ -24,33 +23,33 @@ body {
     background-attachment: fixed;
 }
 
-/* camada suave */
+/* CAMADA AJUSTADA (não apaga mais a imagem) */
 body::before {
     content: "";
     position: fixed;
     inset: 0;
-    background: rgba(255,255,255,0.05);
+
+    background: rgba(255,255,255,0.05); /* bem leve */
     backdrop-filter: blur(2px);
+
     z-index: 0;
 }
 
-/* conteúdo acima do fundo */
+/* garante que o conteúdo fique acima da camada */
 body * {
     position: relative;
     z-index: 1;
 }
 
-/* título */
 h2 {
     color: white;
-    text-shadow:
+    text-shadow: 
         -1px -1px 0 #000,
          1px -1px 0 #000,
-        -1px 1px 0 #000,
-         1px 1px 0 #000;
+        -1px  1px 0 #000,
+         1px  1px 0 #000;
 }
 
-/* botões */
 .painel button {
     padding: 12px 20px;
     margin: 6px;
@@ -59,6 +58,7 @@ h2 {
     cursor: pointer;
     font-size: 16px;
     background: #ccc;
+    color: black;
 }
 
 .painel button:hover {
@@ -66,27 +66,43 @@ h2 {
     transform: scale(1.03);
 }
 
-/* botão ativo */
 .ativo {
     background: #1ec31e;
     color: white;
+    transform: scale(1.05);
 }
 
-/* setor atual */
 #setor {
     font-size: 22px;
     margin: 10px;
     font-weight: bold;
     color: white;
+
+    text-shadow: 
+        -1px -1px 0 #000,
+         1px -1px 0 #000,
+        -1px  1px 0 #000,
+         1px  1px 0 #000;
 }
 
-/* campo busca */
+#info {
+    margin-top: 35px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+
+    text-shadow: 
+        -1px -1px 0 #000,
+         1px -1px 0 #000,
+        -1px  1px 0 #000,
+         1px  1px 0 #000;
+}
+
 input {
     padding: 10px;
     width: 300px;
 }
 
-/* sugestões */
 #sugestoes {
     width: 320px;
     margin: auto;
@@ -106,14 +122,7 @@ input {
     background: #eee;
 }
 
-/* info item */
-#info {
-    margin-top: 20px;
-    color: white;
-    font-weight: bold;
-}
-
-/* grid */
+/* GRID */
 .grid {
     display: grid;
     gap: 14px;
@@ -121,27 +130,39 @@ input {
     margin-top: 30px;
 }
 
-/* células */
+/* QUADRADOS BONITOS */
 .cel {
     width: 65px;
     height: 65px;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     background: rgba(255,255,255,0.9);
     border-radius: 12px;
+
     font-weight: bold;
+    color: #333;
+
     border: 1px solid #ddd;
+
     box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+
+    transition: all 0.2s ease;
 }
 
-/* estoque ok */
+.cel:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+/* STATUS */
 .ok {
     background: #28a745;
     color: white;
 }
 
-/* estoque baixo */
 .baixo {
     background: #dc3545;
     color: white;
@@ -174,27 +195,22 @@ input {
 <input id="busca" placeholder="Digite código ou descrição">
 
 <div id="sugestoes"></div>
-
+<br>
 <div id="info"></div>
-
+<br>
 <div id="mapa" class="grid"></div>
 
 <script>
-
-/ link api */
 const api = "https://script.google.com/macros/s/AKfycbzTrCIYk4dE2BDS_5_GF5e0PM0o-vF9_mm84tBWnyojMQZBId4pG7s1wJMYplvfWiXx/exec";
 
-/ variáveis */
 let abaAtual = "";
 let letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 let digitando = true;
 let totalPratGlobal = 0;
 let totalCabGlobal = 0;
 
-/ busca automática */
 busca.addEventListener("keyup", sugerir);
 
-/ troca setor */
 function setAba(nome, btn){
     abaAtual = nome;
 
@@ -209,14 +225,13 @@ function setAba(nome, btn){
     carregarMapaCompleto();
 }
 
-/ carrega mapa inteiro */
 async function carregarMapaCompleto(){
     try{
         let res = await fetch(api + "?aba=" + encodeURIComponent(abaAtual));
         let json = await res.json();
 
         totalPratGlobal = json.totalPrateleiras || 9;
-        totalCabGlobal = json.totalCabides || 32;
+        totalCabGlobal = json.totalCabides || 10;
 
         desenharMapaCompleto(totalPratGlobal, totalCabGlobal);
     }catch(err){
@@ -224,7 +239,6 @@ async function carregarMapaCompleto(){
     }
 }
 
-/ busca sugestões */
 async function sugerir(){
     if(!abaAtual || !digitando) return;
 
@@ -234,57 +248,62 @@ async function sugerir(){
         return;
     }
 
-    let res = await fetch(api + "?aba=" + encodeURIComponent(abaAtual) + "&q=" + encodeURIComponent(termo));
-    let json = await res.json();
+    try{
+        let res = await fetch(api + "?aba=" + encodeURIComponent(abaAtual) + "&q=" + encodeURIComponent(termo));
+        let json = await res.json();
 
-    sugestoes.innerHTML = "";
+        let itens = json.itens || [];
 
-    (json.itens || []).forEach(item=>{
-        let d = document.createElement("div");
-        d.className = "sug";
-        d.innerHTML = item.codigo + " - " + item.descricao;
+        sugestoes.innerHTML = "";
 
-        d.onclick = ()=>{
-            digitando = false;
-            busca.value = item.descricao;
-            sugestoes.innerHTML = "";
-            mostrarItem(item);
-            setTimeout(()=>digitando=true,400);
-        }
+        itens.forEach(item=>{
+            let d = document.createElement("div");
+            d.className = "sug";
+            d.innerHTML = item.codigo + " - " + item.descricao;
 
-        sugestoes.appendChild(d);
-    });
+            d.onclick = ()=>{
+                digitando = false;
+                sugestoes.innerHTML = "";
+                busca.value = item.descricao;
+                mostrarItem(item);
+                setTimeout(()=>digitando=true, 400);
+            }
+
+            sugestoes.appendChild(d);
+        });
+
+    }catch(err){
+        console.error(err);
+    }
 }
 
-/ destaca item */
 function mostrarItem(item){
-
-    desenharMapaCompleto(totalPratGlobal, totalCabGlobal);
+    document.querySelectorAll(".cel").forEach(c => c.classList.remove("ok","baixo"));
 
     let letra = isNaN(item.prateleira) ? item.prateleira : letras[item.prateleira-1];
-
-    let pIndex = isNaN(item.prateleira) ? letras.indexOf(letra)+1 : Number(item.prateleira);
-    let cIndex = Number(item.cabide);
 
     info.innerHTML = `
         ${item.descricao}<br>
         Código: ${item.codigo}<br>
-        Local: ${letra}-${cIndex}<br>
+        Local: ${letra} - ${item.cabide}<br>
         Estoque: ${item.estoqueAtual}
     `;
 
-    let cel = document.getElementById("p"+pIndex+"c"+cIndex);
+    let pIndex = isNaN(item.prateleira) ? letras.indexOf(letra)+1 : Number(item.prateleira);
+    let cIndex = Number(item.cabide);
 
-    if(cel){
-        if(item.estoqueAtual <= item.estoqueMin){
-            cel.classList.add("baixo");
-        }else{
-            cel.classList.add("ok");
-        }
-    }
+    let cabMin = Math.max(1, cIndex - ((cIndex - 1) % 10));
+    let cabMax = Math.min(totalCabGlobal, cabMin + 9);
+
+    desenharMapaFaixa(pIndex, cabMin, cabMax);
+
+    let cel = document.getElementById("p"+pIndex+"c"+cIndex);
+    if(!cel) return;
+
+    if(item.estoqueAtual <= item.estoqueMin) cel.classList.add("baixo");
+    else cel.classList.add("ok");
 }
 
-/ desenha mapa */
 function desenharMapaCompleto(pMax, cMax){
     mapa.innerHTML="";
     mapa.style.gridTemplateColumns = `repeat(${cMax},65px)`;
@@ -300,6 +319,21 @@ function desenharMapaCompleto(pMax, cMax){
     }
 }
 
+function desenharMapaFaixa(prat, cabMin, cabMax){
+    mapa.innerHTML="";
+    let cabTotal = cabMax - cabMin + 1;
+    mapa.style.gridTemplateColumns = `repeat(${cabTotal},65px)`;
+
+    for(let c=cabMin;c<=cabMax;c++){
+        let div = document.createElement("div");
+        div.className = "cel";
+        div.id = "p"+prat+"c"+c;
+        div.innerHTML = letras[prat-1]+"-"+c;
+        mapa.appendChild(div);
+    }
+}
+
+busca.addEventListener("focus", ()=>digitando=true);
 </script>
 
 </body>
