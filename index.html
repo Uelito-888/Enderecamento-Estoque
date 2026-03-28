@@ -4,29 +4,52 @@
 <meta charset="UTF-8">
 
 <style>
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
 body {
     font-family: Arial;
     text-align: center;
 
-    background: url('imagem-engrenagem.jpg') no-repeat center center fixed;
+    /* FUNDO CORRIGIDO */
+    background:
+        radial-gradient(circle at center, rgba(0,0,0,0) 50%, rgba(0,0,0,0.6) 100%),
+        url('imagem-engrenagem.jpg') no-repeat center center;
+
     background-size: cover;
+    background-attachment: fixed;
 }
 
-/* camada branca suave por cima da imagem */
+/* CAMADA AJUSTADA (não apaga mais a imagem) */
 body::before {
     content: "";
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
 
-    background: rgba(245,245,245,0.7);
-    backdrop-filter: blur(3px);
-    z-index: -1;
+    background: rgba(255,255,255,0.05); /* bem leve */
+    backdrop-filter: blur(2px);
+
+    z-index: 0;
 }
 
-/* BOTÕES COM BORDA PRETA */
+/* garante que o conteúdo fique acima da camada */
+body * {
+    position: relative;
+    z-index: 1;
+}
+
+h2 {
+    color: white;
+    text-shadow: 
+        -1px -1px 0 #000,
+         1px -1px 0 #000,
+        -1px  1px 0 #000,
+         1px  1px 0 #000;
+}
+
 .painel button {
     padding: 12px 20px;
     margin: 6px;
@@ -36,27 +59,43 @@ body::before {
     font-size: 16px;
     background: #ccc;
     color: black;
-    transition: all 0.2s;
 }
 
-/* efeito hover */
 .painel button:hover {
     background: #bbb;
     transform: scale(1.03);
 }
 
-/* botão ativo */
 .ativo {
     background: #1ec31e;
     color: white;
     transform: scale(1.05);
-    border: 2px solid black;
 }
 
 #setor {
     font-size: 22px;
     margin: 10px;
     font-weight: bold;
+    color: white;
+
+    text-shadow: 
+        -1px -1px 0 #000,
+         1px -1px 0 #000,
+        -1px  1px 0 #000,
+         1px  1px 0 #000;
+}
+
+#info {
+    margin-top: 35px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+
+    text-shadow: 
+        -1px -1px 0 #000,
+         1px -1px 0 #000,
+        -1px  1px 0 #000,
+         1px  1px 0 #000;
 }
 
 input {
@@ -83,30 +122,50 @@ input {
     background: #eee;
 }
 
+/* GRID */
 .grid {
     display: grid;
-    gap: 6px;
+    gap: 14px;
     justify-content: center;
     margin-top: 30px;
 }
 
+/* QUADRADOS BONITOS */
 .cel {
-    border: 1px solid black;
-    padding: 14px;
-    background: white;
-    min-width: 60px;
-    transition: all 0.2s;
+    width: 65px;
+    height: 65px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(255,255,255,0.9);
+    border-radius: 12px;
+
+    font-weight: bold;
+    color: #333;
+
+    border: 1px solid #ddd;
+
+    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+
+    transition: all 0.2s ease;
 }
 
+.cel:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+/* STATUS */
 .ok {
-    background: lime;
-    font-weight: bold;
+    background: #28a745;
+    color: white;
 }
 
 .baixo {
-    background: red;
+    background: #dc3545;
     color: white;
-    font-weight: bold;
 }
 </style>
 </head>
@@ -224,9 +283,9 @@ function mostrarItem(item){
     let letra = isNaN(item.prateleira) ? item.prateleira : letras[item.prateleira-1];
 
     info.innerHTML = `
-        <b>${item.descricao}</b><br>
+        ${item.descricao}<br>
         Código: ${item.codigo}<br>
-        Local: ${letra}-${item.cabide}<br>
+        Local: ${letra} - ${item.cabide}<br>
         Estoque: ${item.estoqueAtual}
     `;
 
@@ -247,7 +306,7 @@ function mostrarItem(item){
 
 function desenharMapaCompleto(pMax, cMax){
     mapa.innerHTML="";
-    mapa.style.gridTemplateColumns = `repeat(${cMax},60px)`;
+    mapa.style.gridTemplateColumns = `repeat(${cMax},65px)`;
 
     for(let p=1;p<=pMax;p++){
         for(let c=1;c<=cMax;c++){
@@ -263,7 +322,7 @@ function desenharMapaCompleto(pMax, cMax){
 function desenharMapaFaixa(prat, cabMin, cabMax){
     mapa.innerHTML="";
     let cabTotal = cabMax - cabMin + 1;
-    mapa.style.gridTemplateColumns = `repeat(${cabTotal},60px)`;
+    mapa.style.gridTemplateColumns = `repeat(${cabTotal},65px)`;
 
     for(let c=cabMin;c<=cabMax;c++){
         let div = document.createElement("div");
