@@ -181,6 +181,14 @@ input {
 
 <input id="busca" placeholder="Digite código ou descrição">
 
+<div id="buscaMedidas" style="display:none; margin-top:10px;">
+    <input id="interno" placeholder="Interno (mm)" type="number">
+    <input id="externo" placeholder="Externo (mm)" type="number">
+    <input id="altura" placeholder="Altura (mm)" type="number">
+    <br><br>
+    <button onclick="buscarPorMedidas()">Buscar por Medidas</button>
+</div>
+
 <div id="sugestoes"></div>
 <br>
 <div id="info"></div>
@@ -188,7 +196,7 @@ input {
 <div id="mapa" class="grid"></div>
 
 <script>
-const api = "https://script.google.com/macros/s/AKfycbzTrCIYk4dE2BDS_5_GF5e0PM0o-vF9_mm84tBWnyojMQZBId4pG7s1wJMYplvfWiXx/exec";
+const api = "https://script.google.com/macros/s/AKfycbwG2veLn5KQ8xvUgSJI8_nyYtShqLjOsoSfSo2yARMeqKHEkwe27pGjOYRfODaUwQE8/exec";
 
 let abaAtual = "";
 let letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -217,6 +225,13 @@ function setAba(nome, btn){
     info.innerHTML = "";
     sugestoes.innerHTML = "";
 
+    // 👇 AQUI É O CONTROLE
+    if(nome.toLowerCase().includes("rolamentos")){
+        document.getElementById("buscaMedidas").style.display = "block";
+    } else {
+        document.getElementById("buscaMedidas").style.display = "none";
+    }
+
     carregarMapaCompleto();
 }
 
@@ -229,6 +244,47 @@ async function carregarMapaCompleto(){
         totalCabGlobal = json.totalCabides || 10;
 
         desenharMapaCompleto(totalPratGlobal, totalCabGlobal);
+    }catch(err){
+        console.error(err);
+    }
+}
+
+async function buscarPorMedidas(){
+    let interno = document.getElementById("interno").value;
+    let externo = document.getElementById("externo").value;
+    let altura = document.getElementById("altura").value;
+
+    if(!interno || !externo || !altura){
+        alert("Preencha todos os campos!");
+        return;
+    }
+
+    try{
+        let res = await fetch(
+            api +
+            "?aba=" + encodeURIComponent(abaAtual) +
+            "&interno=" + interno +
+            "&externo=" + externo +
+            "&altura=" + altura
+        );
+
+        let json = await res.json();
+        let itens = json.itens || [];
+
+        sugestoes.innerHTML = "";
+
+        itens.forEach(item=>{
+            let d = document.createElement("div");
+            d.className = "sug";
+            d.innerHTML = item.codigo + " - " + item.descricao;
+
+            d.onclick = ()=>{
+                mostrarItem(item);
+            };
+
+            sugestoes.appendChild(d);
+        });
+
     }catch(err){
         console.error(err);
     }
