@@ -269,6 +269,7 @@ async function buscarPorMedidas(){
     let interno = document.getElementById("interno").value;
     let externo = document.getElementById("externo").value;
     let altura = document.getElementById("altura").value;
+    let sugestoes = document.getElementById("sugestoes");
 
     if(!interno || !externo || !altura){
         alert("Preencha todos os campos!");
@@ -279,28 +280,33 @@ async function buscarPorMedidas(){
         let res = await fetch(
             api +
             "?aba=" + encodeURIComponent(abaAtual) +
-            "&interno=" + interno +
-            "&externo=" + externo +
-            "&altura=" + altura
+            "&interno=" + encodeURIComponent(interno) +
+            "&externo=" + encodeURIComponent(externo) +
+            "&altura=" + encodeURIComponent(altura)
         );
 
         let json = await res.json();
         let itens = json.itens || [];
 
         sugestoes.innerHTML = "";
+        
+        if(itens.length === 0){
+            let d = document.createElement("div");
+            d.className = "sug";
+            d.innerText = "Nenhum item com essas medidas";
+            sugestoes.appendChild(d);
+            return;
+        }
 
         itens.forEach(item=>{
             let d = document.createElement("div");
             d.className = "sug";
             d.innerHTML = item.codigo + " - " + item.descricao;
-
             d.onclick = ()=>{
                 mostrarItem(item);
             };
-
             sugestoes.appendChild(d);
         });
-
     }catch(err){
         console.error(err);
     }
