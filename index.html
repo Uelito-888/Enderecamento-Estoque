@@ -189,6 +189,13 @@ input {
     <button onclick="buscarPorMedidas()">Buscar por Medidas</button>
 </div>
 
+<div id="buscaLarguraCompr" style="display:none; margin-top:10px;">
+    <input id="comprimento" placeholder="Comprimento (mm)">
+    <input id="largura" placeholder="Largura (mm)">
+    <br><br>
+    <button onclick="buscarComprLarg()">Buscar por Medidas</button>
+</div>
+
 <div id="sugestoes"></div>
 <br>
 <div id="info"></div>
@@ -196,7 +203,7 @@ input {
 <div id="mapa" class="grid"></div>
 
 <script>
-const api = "https://script.google.com/macros/s/AKfycbwG2veLn5KQ8xvUgSJI8_nyYtShqLjOsoSfSo2yARMeqKHEkwe27pGjOYRfODaUwQE8/exec";
+const api = "https://script.google.com/macros/s/AKfycbzXbdPHP5DJ9PqyFcfXFL-Yl6gR2QX2lO1Xcie8REDS05RG_08WKvxsMWJGS1E_J1k-/exec";
 
 let abaAtual = "";
 let letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -225,11 +232,20 @@ function setAba(nome, btn){
     info.innerHTML = "";
     sugestoes.innerHTML = "";
 
-    //AQUI É O CONTROLE
+    //CONTROLE ROLAMENTOS
     if(nome.toLowerCase().includes("rolamentos")){
         document.getElementById("buscaMedidas").style.display = "block";
     } else {
         document.getElementById("buscaMedidas").style.display = "none";
+    }
+
+    carregarMapaCompleto();
+
+    //CONTROLE ESTEIRAS
+    if(nome.toLowerCase().includes("esteiras")){
+        document.getElementById("buscaLarguraCompr").style.display = "block";
+    } else {
+        document.getElementById("buscaLarguraCompr").style.display = "none";
     }
 
     carregarMapaCompleto();
@@ -286,6 +302,46 @@ async function buscarPorMedidas(){
         });
 
     }catch(err){
+        console.error(err);
+    }
+}
+
+async function buscarComprLarg() {
+
+    let comprimento = document.getElementById("comprimento").value;
+    let largura = document.getElementById("largura").value;
+    let sugestoes = document.getElementById("sugestoes");
+
+    if (!comprimento || !largura) {
+        alert("Preencha todos os campos!");
+        return;
+    }
+
+    try {
+        let res = await fetch(
+            api +
+            "?aba=" + encodeURIComponent(abaAtual) +
+            "&comprimento=" + encodeURIComponent(comprimento) +
+            "&largura=" + encodeURIComponent(largura)
+        );
+
+        let json = await res.json();
+        let itens = json.itens || [];
+        sugestoes.innerHTML = "";
+
+        itens.forEach(item => {
+            let d = document.createElement("div");
+            d.className = "sug";
+            d.innerHTML = item.codigo + " - " + item.descricao;
+
+            d.onclick = () => {
+                mostrarItem(item); // ajuste se necessário
+            };
+
+            sugestoes.appendChild(d);
+        });
+
+    } catch (err) {
         console.error(err);
     }
 }
