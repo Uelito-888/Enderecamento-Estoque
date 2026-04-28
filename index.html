@@ -329,6 +329,14 @@ async function buscarComprLarg() {
         let itens = json.itens || [];
         sugestoes.innerHTML = "";
 
+        if (itens.length === 0) {
+        let d = document.createElement("div");
+        d.className = "sug";
+        d.innerText = "Nenhum item com essas medidas";
+        sugestoes.appendChild(d);
+         return; // importante pra não continuar
+        }
+        
         itens.forEach(item => {
             let d = document.createElement("div");
             d.className = "sug";
