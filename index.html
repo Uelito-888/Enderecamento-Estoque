@@ -103,7 +103,7 @@ input {
 }
 
 .sug {
-    padding: 10px;
+    padding: 16px;
     border-bottom: 1px solid #eee;
     cursor: pointer;
 }
@@ -188,7 +188,9 @@ input {
     <input id="externo" placeholder="Externo (mm)" type="number">
     <input id="altura" placeholder="Altura (mm)" type="number">
     <br><br>
-    <button onclick="buscarPorMedidas()">Buscar por Medidas</button>
+    <button onclick="buscarPorMedidas()">Buscar por medidas</button>
+    <br><br>
+    <button onclick="buscarMedidasGlobal()">Onde está meu rolamento?</button>
     <br><br>
 </div>
 
@@ -207,7 +209,7 @@ input {
 <div id="mapa" class="grid"></div>
 
 <script>
-const api = "https://script.google.com/macros/s/AKfycbx0F2lMzmO42Un3SOCAY8dcFc20P7U9qxB5VxuUIvkg3V0AP09WQ6NhzIIICxisGkVD/exec";
+const api = "https://script.google.com/macros/s/AKfycbwIIcM00F_OwGqybanRsxwMY2EhfXnPv2s2xBhh0rh87xKBQyzC9SqRnK6W82Xq0pdH/exec";
 
 let abaAtual = "";
 let letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -401,6 +403,63 @@ async function sugerir(){
 
             sugestoes.appendChild(d);
         });
+
+    }catch(err){
+        console.error(err);
+    }
+}
+
+async function buscarMedidasGlobal(){
+    let interno = document.getElementById("interno").value;
+    let externo = document.getElementById("externo").value;
+    let altura = document.getElementById("altura").value;
+    let sugestoes = document.getElementById("sugestoes");
+
+    if(!interno || !externo || !altura){
+        alert("Preencha todos os campos!");
+        return;
+    }
+
+    try{
+        let res = await fetch(
+            api +
+            "?global=true" +
+            "&interno=" + encodeURIComponent(interno) +
+            "&externo=" + encodeURIComponent(externo) +
+            "&altura=" + encodeURIComponent(altura)
+        );
+
+        let json = await res.json();
+        let itens = json.itens || [];
+
+        sugestoes.innerHTML = "";
+
+        if(itens.length === 0){
+            let d = document.createElement("div");
+            d.className = "sug";
+            d.innerText = "Nenhum item encontrado em nenhum setor";
+            sugestoes.appendChild(d);
+            return;
+        }
+
+        itens.forEach(item=>{
+    let d = document.createElement("div");
+    d.className = "sug";
+
+    d.innerHTML = `
+        <b>${item.codigo}</b> - ${item.descricao}<br>
+        <small>Setor: ${item.setor} | Local: ${item.prateleira}-${item.cabide}</small>
+    `;
+
+    d.onclick = ()=>{
+        abaAtual = item.setor;
+        setor.innerHTML = "<br>Setor atual: " + item.setor;
+
+         mostrarItem(item); // direto
+    };
+
+    sugestoes.appendChild(d);
+});
 
     }catch(err){
         console.error(err);
