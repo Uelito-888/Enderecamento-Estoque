@@ -210,7 +210,7 @@ input {
 <div id="mapa" class="grid"></div>
 
 <script>
-const api = "https://script.google.com/macros/s/AKfycbwIIcM00F_OwGqybanRsxwMY2EhfXnPv2s2xBhh0rh87xKBQyzC9SqRnK6W82Xq0pdH/exec";
+const api = "https://script.google.com/macros/s/AKfycbzelVlaAWFp4g_tgOf4d9dpMxIv6pGeIgev6D37y4PR9N1w0_VFJyB8KegJRisuiSiU/exec";
 
 let abaAtual = "";
 let letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -475,6 +475,7 @@ function mostrarItem(item){
     info.innerHTML = `
         ${item.descricao}<br>
         Código: ${item.codigo}<br>
+        Prateleira: ${item.local}<br>
         Local: ${letra} - ${item.cabide}<br>
         Estoque: ${item.estoqueAtual}
     `;
