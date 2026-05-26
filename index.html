@@ -473,7 +473,7 @@ function mostrarItem(item){
     let letra = isNaN(item.prateleira) ? item.prateleira : letras[item.prateleira-1];
 
     info.innerHTML = `
-        ${item.descricao}<br>
+        ${item.descricao}<br><br>
         Código: ${item.codigo}<br>
         Prateleira: ${item.local}<br>
         Local: ${letra} - ${item.cabide}<br>
