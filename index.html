@@ -211,7 +211,7 @@ input {
 <div id="mapa" class="grid"></div>
 
 <script>
-const api = "https://script.google.com/macros/s/AKfycbzPExFH2MkObkX2u--mHFAzKouioJp3AbOt7xfXwrRmrB9e6f7LfsA6ABY4KkklroU/exec";
+const api = "https://script.google.com/macros/s/AKfycbymcmmfBfnxXibU2MDzQ6NR7xYoQ9TdjoaXIc0gDv4OAcNJh1hqD4GxPSvheaw2P1J-/exec";
 
 let abaAtual = "";
 let letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -369,7 +369,7 @@ async function buscarComprLarg() {
 }
 
 async function sugerir(){
-    if(!abaAtual || !digitando) return;
+    if(!digitando) return;
 
     let termo = busca.value.trim();
 
@@ -377,33 +377,60 @@ async function sugerir(){
     ultimaBusca = idBusca;
 
     try{
-        let res = await fetch(api + "?aba=" + encodeURIComponent(abaAtual) + "&q=" + encodeURIComponent(termo));
+        let res = await fetch(
+        api +
+        "?global=true" +
+        "&q=" + encodeURIComponent(termo)
+        );
         let json = await res.json();
 
         if(idBusca !== ultimaBusca) return;
 
         let itens = json.itens || [];
 
-        sugestoes.innerHTML = "";
+         sugestoes.innerHTML = "";
 
-        itens.forEach(item=>{
+            itens.forEach(item=>{
             let d = document.createElement("div");
             d.className = "sug";
             d.innerHTML = item.codigo + " - " + item.descricao;
 
-            d.onclick = ()=>{
-                digitando = false;
-                sugestoes.innerHTML = "";
-                busca.value = item.descricao;
-                mostrarItem(item);
-                setTimeout(()=>digitando=true, 400);
-            }
+            d.onclick = async ()=>{
+
+            digitando = false;
+
+            sugestoes.innerHTML = "";
+            busca.value = item.descricao;
+
+            abaAtual = item.setor;
+
+             setor.innerHTML =
+             "<br>Setor atual: " + item.setor;
+
+                 document.querySelectorAll(".painel button").forEach(btn => {
+
+             const onclick = btn.getAttribute("onclick") || "";
+
+          if (onclick.toLowerCase().includes(item.setor.toLowerCase())) {
+            btn.classList.add("ativo");
+             } else {
+              btn.classList.remove("ativo");
+         }
+
+    });
+
+            await carregarMapaCompleto();
+
+            mostrarItem(item);
+
+            setTimeout(() => digitando = true, 400);
+}
 
             sugestoes.appendChild(d);
         });
 
-    }catch(err){
-        console.error(err);
+             }catch(err){
+             console.error(err);
     }
 }
 
@@ -453,10 +480,30 @@ async function buscarMedidasGlobal(){
         abaAtual = item.setor;
         setor.innerHTML = "<br>Setor atual: " + item.setor;
 
-         mostrarItem(item); // direto
+         abaAtual = item.setor;
+
+        document.querySelectorAll(".painel button").forEach(btn => {
+
+    if (
+        btn.getAttribute("onclick")
+           .toLowerCase()
+           .includes(item.setor.toLowerCase())
+    ){
+        btn.classList.add("ativo");
+    }else{
+        btn.classList.remove("ativo");
+    }
+
+});
+
+        setor.innerHTML =
+         "<br>Setor atual: " + item.setor;
+
+        carregarMapaCompleto()
+          .then(() => mostrarItem(item));
     };
 
-    sugestoes.appendChild(d);
+         sugestoes.appendChild(d);
 });
 
     }catch(err){
