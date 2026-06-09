@@ -211,7 +211,7 @@ input {
 <div id="mapa" class="grid"></div>
 
 <script>
-const api = "https://script.google.com/macros/s/AKfycbymcmmfBfnxXibU2MDzQ6NR7xYoQ9TdjoaXIc0gDv4OAcNJh1hqD4GxPSvheaw2P1J-/exec";
+const api = "https://script.google.com/macros/s/AKfycbycjpm-UkhReqYR7WfG2dQH0foeiN48bd3y80uStj2kjn5dT6DElBAzvf2vT43hTvFr/exec";
 
 let abaAtual = "";
 let letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -377,10 +377,11 @@ async function sugerir(){
     ultimaBusca = idBusca;
 
     try{
-        let res = await fetch(
-        api +
-        "?global=true" +
-        "&q=" + encodeURIComponent(termo)
+       let res = await fetch(
+         api +
+            "?global=true" +
+            "&aba=" + encodeURIComponent(abaAtual) +
+            "&q=" + encodeURIComponent(termo)
         );
         let json = await res.json();
 
