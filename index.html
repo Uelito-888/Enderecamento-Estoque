@@ -210,7 +210,7 @@ input {
 <div id="mapa" class="grid"></div>
 
 <script>
-const api = "https://script.google.com/macros/s/AKfycbxXxCs5rz2XR-J8eWHv5nlNUHyYI9sNUharCsyua-E7RyzLbrjiwuFJqaDQ0quTCjt7/exec";
+const api = "https://script.google.com/macros/s/AKfycbzPExFH2MkObkX2u--mHFAzKouioJp3AbOt7xfXwrRmrB9e6f7LfsA6ABY4KkklroU/exec";
 
 let abaAtual = "";
 let letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -370,11 +370,7 @@ async function buscarComprLarg() {
 async function sugerir(){
     if(!abaAtual || !digitando) return;
 
-    let termo = busca.value;
-    if(termo.length < 2){
-        sugestoes.innerHTML = "";
-        return;
-    }
+    let termo = busca.value.trim();
 
     let idBusca = Date.now();
     ultimaBusca = idBusca;
@@ -525,6 +521,9 @@ function desenharMapaFaixa(prat, cabMin, cabMax){
 }
 
 busca.addEventListener("focus", ()=>digitando=true);
+busca.addEventListener("focus", () => {
+    sugerir();
+});
 </script>
 
 </body>
